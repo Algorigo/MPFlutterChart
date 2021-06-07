@@ -46,13 +46,14 @@ abstract class ChartState<T extends Chart> extends State<T> {
 
     String fileName = DateTime.now().toIso8601String();
     String path = '$directory/$fileName.png';
+    File file;
     _screenshotController.capture(path: path, pixelRatio: 3.0).then((imgFile) {
-      ImageGallerySaver.saveImage(Uint8List.fromList(imgFile.readAsBytesSync()))
-          .then((value) {
-        imgFile.delete();
-      });
+      file = imgFile;
+      ImageGallerySaver.saveImage(Uint8List.fromList(imgFile.readAsBytesSync()));
       isCapturing = false;
-    }).catchError((error) {
+    })
+        .then((value) => file.delete())
+        .catchError((error) {
       isCapturing = false;
     });
   }
